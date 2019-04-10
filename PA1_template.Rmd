@@ -1,6 +1,5 @@
 ---
 title: "PA1_template"
-author: "Mukesh kumar.P"
 date: "March 29, 2019"
 output: html_document
 ---
