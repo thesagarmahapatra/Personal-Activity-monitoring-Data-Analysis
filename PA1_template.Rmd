@@ -1,0 +1,142 @@
+---
+title: "PA1_template"
+author: "Mukesh kumar.P"
+date: "March 29, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+
+# **Loading and preprocessing the data**
+```{r echo=TRUE}
+data<-read.csv("activity.csv")
+head(data)
+```
+
+
+
+# **Total number of steps taken per day**
+```{r echo=TRUE}
+subset_data=aggregate(data$steps~data$date,FUN=sum)
+barplot(subset_data$`data$steps`,names.arg = subset_data$`data$date`,col=subset_data$`data$date`,main="Total number of steps taken per day",xlab="date",ylab="steps")
+```
+
+
+
+
+###     Mean of the total number of steps taken per day
+```{r}
+mean(subset_data$`data$steps`,na.rm = T)
+```
+
+###     Median of the total number of steps taken per day
+```{r}
+median(subset_data$`data$steps`,na.rm = T)
+```
+
+
+# **Average daily activity pattern**
+```{r}
+subset_data=aggregate(data$steps~data$interval,FUN=mean)
+plot(subset_data$`data$interval`,subset_data$`data$steps`,type="l",xlab="Time  interval",ylab="Average steps",col="red",main="Average daily activity pattern")
+```
+ 
+###  **5-minute interval containing the maximum number of steps**
+```{r}
+subset_data$`data$interval`[subset_data$`data$steps`==max(subset_data$`data$steps`)]
+```
+
+#  **Inputing missing values**
+```{r}
+sum(is.na(data$steps))
+```
+
+### Strategy for filling in all of the missing values 
+
+    *Fill in the NA values with the mean of the steps in that particular day.*
+
+
+### New dataset  with the missing data filled.
+```{r}
+data1<-data  # new dataset
+x<-is.na(data1$steps)
+subset_data=aggregate(data1$steps~data1$interval,FUN=mean)
+names(subset_data)=c("interval","steps")
+mynewdata=merge(data1,subset_data,by="interval")
+data1$steps[x]=mynewdata$steps.y[x]
+sum(is.na(data1$steps))
+```
+### Total number of steps taken per day
+```{r}
+subset_data_new=aggregate(data1$steps~data1$date,FUN=sum)
+barplot(subset_data_new$`data1$steps`,names.arg=subset_data_new$`data1$date`,col=subset_data_new$`data1$date`,xlab="Date",ylab="Steps",main="Steps taken per day")
+```
+
+### NEW MEAN
+```{r}
+subset_data_new=aggregate(data1$steps~data1$date,FUN=sum)
+mean(subset_data_new$`data1$steps`,na.rm=T)
+```
+
+### NEW MEDIAN
+```{r}
+subset_data_new=aggregate(data1$steps~data1$date,FUN=sum)
+median(subset_data_new$`data1$steps`,na.rm=T)
+```
+
+
+The impact of the missing data seems rather low, at least when estimating the total number of steps per day.
+
+# **Differences in activity patterns between weekdays and weekends**
+
+```{r}
+type_of_day <- function(date) {
+    if (weekdays(as.Date(date)) %in% c("Saturday", "Sunday")) {
+        0
+    } else {
+        1
+    }
+}
+data1$typeday <- as.factor(sapply(data1$date, type_of_day))
+head(data1)
+```
+
+HERE  1 refers to weekday and 0 refers to weekend
+
+
+### Average number of steps taken
+
+```{r}
+par(mfrow=c(1,2))
+newdata<-aggregate(steps~interval,data=data1,subset=(data1$typeday==1),FUN=mean)
+plot(newdata$interval,newdata$steps,type="l",xlab="interval",ylab="steps",main="Weekdays")
+newdata<-aggregate(steps~interval,data=data1,subset=(data1$typeday==0),FUN=mean)
+plot(newdata$interval,newdata$steps,type="l",xlab="interval",ylab="steps",main="Weekends")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
